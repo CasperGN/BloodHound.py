@@ -28,6 +28,7 @@ from bloodhound.ad.authentication import ADAuthentication
 from bloodhound.enumeration.computers import ComputerEnumerator
 from bloodhound.enumeration.memberships import MembershipEnumerator
 from bloodhound.enumeration.domains import DomainEnumerator
+from bloodhound.enumeration.gpos import GPOEnumerator
 
 """
 BloodHound.py is a Python port of BloodHound, designed to run on Linux and Windows.
@@ -88,6 +89,9 @@ class BloodHound(object):
             have_gc = len(self.ad.gcs()) > 0
             computer_enum = ComputerEnumerator(self.ad, self.pdc, collect, do_gc_lookup=have_gc)
             computer_enum.enumerate_computers(self.ad.computers, num_workers=num_workers)
+        if 'gpo' in collect:
+            gpo_enum = GPOEnumerator(self.ad, self.pdc)
+            gpo_enum.enumerate_gpos()
         end_time = time.time()
         minutes, seconds = divmod(int(end_time-start_time),60)
         logging.info('Done in %02dM %02dS' % (minutes, seconds))
@@ -114,10 +118,10 @@ def resolve_collection_methods(methods):
     Convert methods (string) to list of validated methods to resolve
     """
     valid_methods = ['group', 'localadmin', 'session', 'trusts', 'default', 'all', 'loggedon',
-                     'objectprops', 'experimental', 'acl', 'dcom', 'rdp', 'psremote', 'dconly']
-    default_methods = ['group', 'localadmin', 'session', 'trusts']
+                     'objectprops', 'experimental', 'acl', 'dcom', 'rdp', 'psremote', 'dconly', 'gpo']
+    default_methods = ['group', 'localadmin', 'session', 'trusts', 'gpo']
     # Similar to SharpHound, All is not really all, it excludes loggedon
-    all_methods = ['group', 'localadmin', 'session', 'trusts', 'objectprops', 'acl', 'dcom', 'rdp', 'psremote']
+    all_methods = ['group', 'localadmin', 'session', 'trusts', 'objectprops', 'acl', 'dcom', 'rdp', 'psremote', 'gpo']
     # DC only, does not collect to computers
     dconly_methods = ['group', 'trusts', 'objectprops', 'acl']
     if ',' in methods:
@@ -175,7 +179,7 @@ def main():
                         default='Default',
                         help='Which information to collect. Supported: Group, LocalAdmin, Session, '
                              'Trusts, Default (all previous), DCOnly (no computer connections), DCOM, RDP,'
-                             'PSRemote, LoggedOn, ObjectProps, ACL, All (all except LoggedOn). '
+                             'PSRemote, LoggedOn, ObjectProps, ACL, GPO, All (all except LoggedOn). '
                              'You can specify more than one by separating them with a comma. (default: Default)')
     parser.add_argument('-u',
                         '--username',
