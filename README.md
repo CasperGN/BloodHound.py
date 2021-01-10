@@ -35,6 +35,7 @@ If you want to restrict collection, specify the `--collectionmethod` parameter, 
 - *Trusts* - Performs domain trust enumeration
 - *LoggedOn* - Performs privileged Session enumeration (requires local admin on the target)
 - *ObjectProps* - Performs Object Properties collection for properties such as LastLogon or PwdLastSet
+- *GPO* - Performs GPO enumeration
 - *All* - Runs all methods above, except LoggedOn
 
 Multiple collectionmethods should be separated by a comma, for example: `-c Group,LocalAdmin`
