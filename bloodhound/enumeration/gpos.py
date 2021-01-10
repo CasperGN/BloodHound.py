@@ -70,6 +70,8 @@ class GPOEnumerator(object):
             }
         }
 
+        logging.info('Found %u GPOs', len(gpos))
+
         json.dump(datastruct, out, indent=indent_level)
 
         logging.debug('Finished writing gpo info')
