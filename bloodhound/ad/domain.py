@@ -390,6 +390,13 @@ class ADDC(ADComputer):
                               generator=True)
         return entries
 
+    def get_gpos(self):
+        entries = self.search('(objectcategory=groupPolicyContainer)', 
+                              attributes=['nTSecurityDescriptor', 'cn', 'gPCFileSysPath', 'distinguishedName', 'objectGUID', 'isCriticalSystemObject', 'managedBy', 'displayName'], 
+                              #attributes='*',
+                              generator=False)
+        return entries
+
     def prefetch_info(self, props=False, acls=False):
         self.get_objecttype()
         self.get_domains(acl=acls)
